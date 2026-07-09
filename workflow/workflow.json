@@ -1,0 +1,1599 @@
+{
+  "name": "WhatsApp Lead Capture â€” Production",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-lead-capture",
+        "options": {},
+        "responseMode": "onReceived"
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        112
+      ],
+      "id": "1463f827-d00f-4ead-b070-24856058aa0f",
+      "name": "WA: Inbound Message Webhook",
+      "webhookId": "8dec3bf4-59a1-4c2d-b48e-beac15266224"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst appSecret = $env.WHATSAPP_APP_SECRET;\nconst signature = $json.headers['x-hub-signature-256'];\nconst body = JSON.stringify($json.body);\n\nif (!signature) {\n  throw new Error('Missing X-Hub-Signature-256 header');\n}\n\nconst expectedSignature = 'sha256=' + crypto\n  .createHmac('sha256', appSecret)\n  .update(body)\n  .digest('hex');\n\nif (signature !== expectedSignature) {\n  throw new Error('Invalid webhook signature — request rejected');\n}\n\nreturn [{ json: $json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        112
+      ],
+      "id": "validate-webhook-signature-node-id",
+      "name": "Validate: Webhook Signature"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "baf06c42-3f0b-4ba7-83e7-6c0c5c6a3120",
+              "leftValue": "={{ $json.body.entry[0].changes[0].value.messages?.[0]?.text?.body }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -960,
+        112
+      ],
+      "id": "9bf12b8c-911a-4ae0-8b48-6707e2ebec83",
+      "name": "Guard: Text Message Only"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f66acb71-1143-442c-9ca2-ddd8b59fbd29",
+              "name": "source",
+              "value": "whatsapp",
+              "type": "string"
+            },
+            {
+              "id": "58e34304-703e-4e8e-bcb7-de007d4b4a3a",
+              "name": "name",
+              "value": "={{$json.body.entry[0].changes[0].value.contacts[0].profile.name}}",
+              "type": "string"
+            },
+            {
+              "id": "0007a283-0c82-481e-9514-ea58f2612a43",
+              "name": "phone",
+              "value": "={{$json.body.entry[0].changes[0].value.contacts[0].wa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "445497d9-2cbc-4ea2-896d-86f6fd8c1f92",
+              "name": "message",
+              "value": "={{$json.body.entry[0].changes[0].value.messages?.[0]?.text?.body}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -736,
+        112
+      ],
+      "id": "4497060c-bb97-470b-b6f4-8f12e22ac803",
+      "name": "Normalize: Extract Payload"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "phone",
+              "keyValue": "={{$json.phone}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -512,
+        112
+      ],
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Lookup: Conversation by Phone",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone": "={{$('Normalize: Extract Payload').first().json.phone}}",
+            "state": "initial",
+            "updated_at": "={{$now}}",
+            "status": "active"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "synced_at",
+              "displayName": "synced_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "crm_lead_id",
+              "displayName": "crm_lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "completed",
+              "displayName": "completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "success",
+              "displayName": "success",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        192
+      ],
+      "id": "3521aa63-49ea-4ad3-b288-58bb978f9cef",
+      "name": "Init: Create Conversation Row"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e1028769-bf5b-4b4a-bf57-f5636d478eca",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "initial",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3913751d-94ec-4b54-807d-40e0dded3a00",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_name",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9b16e329-13d8-4174-ace8-4531dc32d38d",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_company",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a91965af-ffe3-40cc-ba8b-5bd493635db7",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_email",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "507b6894-a190-45c8-bde0-8ec19966604c",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_ride",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        64
+      ],
+      "id": "4d9bc745-d698-4ed4-8882-befa756df0e5",
+      "name": "Route: By Conversation State"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{$json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_name",
+            "updated_at": "={{$now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -272
+      ],
+      "id": "12b47e23-8e27-4c58-97d2-1fe81f3f9b3a",
+      "name": "State: initial → Set waiting_name"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Hello 👋  What is your name?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        -272
+      ],
+      "id": "20b46440-4266-4eb3-bbe7-91af1e83b01d",
+      "name": "WA: Ask Name",
+      "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API â€” Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{$json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_company",
+            "name": "={{$('Normalize: Extract Payload').first().json.message}}",
+            "updated_at": "={{$now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -80
+      ],
+      "id": "1d30fb07-e1cc-4678-ae5b-43fa7facd5ea",
+      "name": "State: Save Name → waiting_company"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "What is your company name?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        -80
+      ],
+      "id": "2d2e58ee-271a-445d-94a9-7f8158dc165a",
+      "name": "WA: Ask Company",
+      "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API â€” Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{$json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_email",
+            "company": "={{$('Normalize: Extract Payload').first().json.message}}",
+            "updated_at": "={{$now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        112
+      ],
+      "id": "1ee6e151-7233-4cda-8c1e-185e36a38038",
+      "name": "State: Save Company → waiting_email"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "What is your email address?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        112
+      ],
+      "id": "e1f2a3b4-c5d6-7890-abcd-123456789012",
+      "name": "WA: Ask Email",
+      "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API â€” Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{$json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_ride",
+            "email": "={{$('Normalize: Extract Payload').first().json.message}}",
+            "updated_at": "={{$now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        304
+      ],
+      "id": "d57e550c-579a-45b3-b6f8-5b1d1c4f07c6",
+      "name": "State: Save Email → waiting_ride",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Which ride are you interested in?\n\nPlease type your selection:",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        304
+      ],
+      "id": "f2a3b4c5-d6e7-8901-bcde-234567890123",
+      "name": "WA: Ask Ride",
+      "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API â€” Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{$json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ride": "={{\n    (val => {\n      const v = val.toLowerCase().trim();\n      if (v === '1' || v.includes('helicopter')) return 'Helicopter Ride';\n      if (v === '2' || v.includes('yacht')) return 'Yacht Charter';\n      if (v === '3' || v.includes('jet') || v.includes('private')) return 'Private Jet';\n      if (v === '4' || v.includes('car') || v.includes('luxury')) return 'Luxury Car';\n      return val;\n    })($('Normalize: Extract Payload').first().json.message)\n  }}",
+            "updated_at": "={{$now}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ride",
+              "displayName": "ride",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1056,
+        304
+      ],
+      "id": "a3b4c5d6-e7f8-9012-cdef-345678901234",
+      "name": "State: Save Ride"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CRM_API_URL }}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer {{ $env.CRM_API_TOKEN }}\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"phone\": $json.phone, \"name\": $json.name, \"company\": $json.company, \"email\": $json.email, \"ride\": $json.ride, \"source\": \"whatsapp\", \"message\": $json.ride } }}",
+        "options": {
+          "timeout": "30000"
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        304
+      ],
+      "id": "b4c5d6e7-f8a9-0123-defa-456789012345",
+      "name": "CRM: Submit Lead",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{$('Route: By Conversation State').item.json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "synced",
+            "synced_at": "={{ $now }}",
+            "state": "idle",
+            "success": true,
+            "completed": true,
+            "updated_at": "={{$now}}",
+            "crm_lead_id": "={{ $json.lead_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "synced_at",
+              "displayName": "synced_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "completed",
+              "displayName": "completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "success",
+              "displayName": "success",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "crm_lead_id",
+              "displayName": "crm_lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        208
+      ],
+      "id": "c5d6e7f8-a9b0-1234-efab-567890123456",
+      "name": "State: Mark Synced"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Thanks! ✅  Your details have been saved. Our team will be in touch shortly.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1728,
+        208
+      ],
+      "id": "271c5553-0901-44a1-bc9a-0f922ee86123",
+      "name": "WA: Send Success Confirmation",
+      "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API â€” Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{$('Route: By Conversation State').item.json.id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "sync_failed",
+            "error": "={{ $json.error?.message || $json.message || 'Unknown connection error' }}",
+            "updated_at": "={{$now}}",
+            "state": "waiting_ride",
+            "completed": false,
+            "success": false
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "completed",
+              "displayName": "completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "success",
+              "displayName": "success",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "dryRun": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        432
+      ],
+      "id": "d6e7f8a9-b0c1-2345-fabc-678901234567",
+      "name": "State: Mark Sync Failed"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Sorry ⚠️  We could not process your request at this time. Please try again later or contact us directly.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1728,
+        432
+      ],
+      "id": "e7f8a9b0-c1d2-3456-abcd-789012345678",
+      "name": "WA: Send Error Message",
+      "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API â€” Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "whatsapp-lead-capture",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1152,
+        640
+      ],
+      "id": "c0ff936c-4ba2-4891-9e52-f842b3045ff3",
+      "name": "WA: Verify Token Webhook",
+      "webhookId": "7e5033c6-f097-4589-bd0b-6f5d88902dd8"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json.query[\"hub.challenge\"]}}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -928,
+        640
+      ],
+      "id": "65a93557-2447-4d39-9fa5-a2e418fa3001",
+      "name": "WA: Respond to Verification"
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = $('Normalize: Extract Payload').first().json.message?.toLowerCase().trim();\nconst rows = $input.all();\n\n// Find all active conversations and sort by ID descending (most recent first)\nconst activeRows = rows.filter(row => row.json.id && row.json.state !== 'idle' && row.json.completed !== true)\n                       .sort((a, b) => b.json.id - a.json.id);\nconst activeRow = activeRows[0];\n\nlet restartRequired = false;\nlet currentConversation = {};\n\nif (!activeRow) {\n  // No active conversation exists -> must create a new one\n  restartRequired = true;\n} else {\n  // Active conversation exists -> check for manual restart keyword or 24h timeout\n  const updatedAt = activeRow.json.updated_at ? new Date(activeRow.json.updated_at).getTime() : 0;\n  const now = new Date().getTime();\n  const hoursSinceUpdate = updatedAt ? (now - updatedAt) / 3600000 : 0;\n  \n  const isRestartKeyword = msg === 'restart' || msg === 'start';\n  const isTimeout = hoursSinceUpdate > 24;\n  \n  if (isRestartKeyword || isTimeout) {\n    restartRequired = true;\n    currentConversation = activeRow.json;\n  } else {\n    // Continue with the active conversation\n    currentConversation = activeRow.json;\n  }\n}\n\nreturn [{\n  json: {\n    ...currentConversation,\n    restart_required: restartRequired\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -80
+      ],
+      "id": "restart-check-code-id",
+      "name": "Check: Restart Required"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "restart-cond-id",
+              "leftValue": "={{$json.restart_required}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        40,
+        -80
+      ],
+      "id": "restart-if-node-id",
+      "name": "Route: Restart Required?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "email-validation-cond",
+              "leftValue": "={{ /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test($('Normalize: Extract Payload').first().json.message) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        480
+      ],
+      "id": "email-validate-if-id",
+      "name": "Check: Email Valid?"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Please enter a valid email address.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        560
+      ],
+      "id": "email-invalid-whats-id",
+      "name": "WA: Ask Email (Retry)",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API — Production"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "WA: Inbound Message Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate: Webhook Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate: Webhook Signature": {
+      "main": [
+        [
+          {
+            "node": "Guard: Text Message Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: Text Message Only": {
+      "main": [
+        [
+          {
+            "node": "Normalize: Extract Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Normalize: Extract Payload": {
+      "main": [
+        [
+          {
+            "node": "Lookup: Conversation by Phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup: Conversation by Phone": {
+      "main": [
+        [
+          {
+            "node": "Check: Restart Required",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init: Create Conversation Row": {
+      "main": [
+        [
+          {
+            "node": "Route: By Conversation State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: By Conversation State": {
+      "main": [
+        [
+          {
+            "node": "State: initial → Set waiting_name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Save Name → waiting_company",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Save Company → waiting_email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: Email Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Save Ride",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: initial → Set waiting_name": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Name → waiting_company": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Company → waiting_email": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Email → waiting_ride": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Ride",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Ride": {
+      "main": [
+        [
+          {
+            "node": "CRM: Submit Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM: Submit Lead": {
+      "main": [
+        [
+          {
+            "node": "State: Mark Synced",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Mark Sync Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Mark Synced": {
+      "main": [
+        [
+          {
+            "node": "WA: Send Success Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Mark Sync Failed": {
+      "main": [
+        [
+          {
+            "node": "WA: Send Error Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WA: Verify Token Webhook": {
+      "main": [
+        [
+          {
+            "node": "WA: Respond to Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Restart Required": {
+      "main": [
+        [
+          {
+            "node": "Route: Restart Required?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Restart Required?": {
+      "main": [
+        [
+          {
+            "node": "Init: Create Conversation Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route: By Conversation State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Email Valid?": {
+      "main": [
+        [
+          {
+            "node": "State: Save Email → waiting_ride",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA: Ask Email (Retry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "tags": [
+    {
+      "name": "whatsapp",
+      "createdAt": "2026-07-08T00:00:00.000Z",
+      "updatedAt": "2026-07-08T00:00:00.000Z"
+    },
+    {
+      "name": "crm",
+      "createdAt": "2026-07-08T00:00:00.000Z",
+      "updatedAt": "2026-07-08T00:00:00.000Z"
+    },
+    {
+      "name": "production",
+      "createdAt": "2026-07-08T00:00:00.000Z",
+      "updatedAt": "2026-07-08T00:00:00.000Z"
+    }
+  ]
+}

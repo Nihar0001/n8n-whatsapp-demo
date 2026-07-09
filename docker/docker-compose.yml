@@ -1,0 +1,79 @@
+# =============================================================================
+# WhatsApp CRM Automation — Docker Compose
+# =============================================================================
+# LOCAL:      docker compose up -d
+# LOGS:       docker compose logs -f n8n
+# STOP:       docker compose down
+# UPDATE:     docker compose pull && docker compose up -d
+# =============================================================================
+
+services:
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: ${N8N_CONTAINER_NAME:-n8n-whatsapp-crm}
+    restart: unless-stopped
+
+    ports:
+      - "${N8N_EXTERNAL_PORT:-5678}:5678"
+
+    environment:
+      # Core
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_HOST=${N8N_HOST:-0.0.0.0}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678}
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Kolkata}
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
+      - N8N_ENVS_MODE=${N8N_ENVS_MODE:-local}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=${N8N_BLOCK_ENV_ACCESS_IN_NODE:-false}
+
+      # Auth
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+
+      # Database
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      - DB_SQLITE_DATABASE=${DB_SQLITE_DATABASE:-/home/node/.n8n/database.sqlite}
+
+      # Executions
+      - EXECUTIONS_PROCESS=${EXECUTIONS_PROCESS:-main}
+      - N8N_CONCURRENCY_PRODUCTION_LIMIT=${N8N_CONCURRENCY_PRODUCTION_LIMIT:-10}
+      - EXECUTIONS_DATA_PRUNE=${EXECUTIONS_DATA_PRUNE:-true}
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-168}
+
+      # WhatsApp / CRM / AI env vars passed to workflow expressions
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}
+      - WHATSAPP_ACCESS_TOKEN=${WHATSAPP_ACCESS_TOKEN}
+      - WHATSAPP_VERIFY_TOKEN=${WHATSAPP_VERIFY_TOKEN}
+      - WHATSAPP_BUSINESS_ACCOUNT_ID=${WHATSAPP_BUSINESS_ACCOUNT_ID}
+      - WHATSAPP_APP_SECRET=${WHATSAPP_APP_SECRET}
+      - CRM_API_URL=${CRM_API_URL}
+      - CRM_API_TOKEN=${CRM_API_TOKEN}
+      - CRM_API_TIMEOUT_MS=${CRM_API_TIMEOUT_MS:-30000}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-models/gemini-2.5-flash}
+      - CONVERSATION_TTL_HOURS=${CONVERSATION_TTL_HOURS:-24}
+
+    volumes:
+      - ${N8N_VOLUME_NAME:-n8n_data}:/home/node/.n8n
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+volumes:
+  n8n_data:
+    name: ${N8N_VOLUME_NAME:-n8n_data}
+    driver: local
