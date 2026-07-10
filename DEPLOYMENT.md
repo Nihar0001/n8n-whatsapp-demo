@@ -225,6 +225,7 @@ WEBHOOK_URL=https://n8n.yourdomain.com
 N8N_BASIC_AUTH_PASSWORD=<strong password>
 N8N_ENVS_MODE=local
 N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+N8N_ALLOW_ENV_VARIABLES=true
 WHATSAPP_PHONE_NUMBER_ID=<from Meta Business>
 WHATSAPP_ACCESS_TOKEN=<from Meta Business — permanent system user token>
 WHATSAPP_VERIFY_TOKEN=<your chosen secret: openssl rand -hex 16>

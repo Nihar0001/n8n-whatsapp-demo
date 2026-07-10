@@ -99,6 +99,7 @@ You must provide the following values to fill in `.env`:
 | `GENERIC_TIMEZONE` | Set to server/business timezone (e.g., `Asia/Kolkata`) |
 | `N8N_ENVS_MODE` | Set to `local` (allows workflows to access local variables) |
 | `N8N_BLOCK_ENV_ACCESS_IN_NODE` | Set to `false` (enables node expressions to access env) |
+| `N8N_ALLOW_ENV_VARIABLES` | Set to `true` (enables dynamic expressions to resolve environment variables) |
 
 These are provided by the automation/business team:
 

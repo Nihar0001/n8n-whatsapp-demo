@@ -5,7 +5,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "whatsapp-lead-capture",
-        "options": {},
+        "options": {
+          "rawBody": true
+        },
         "responseMode": "onReceived"
       },
       "type": "n8n-nodes-base.webhook",
@@ -20,7 +22,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const crypto = require('crypto');\n\nconst appSecret = $env.WHATSAPP_APP_SECRET;\nconst signature = $json.headers['x-hub-signature-256'];\nconst body = JSON.stringify($json.body);\n\nif (!signature) {\n  throw new Error('Missing X-Hub-Signature-256 header');\n}\n\nconst expectedSignature = 'sha256=' + crypto\n  .createHmac('sha256', appSecret)\n  .update(body)\n  .digest('hex');\n\nif (signature !== expectedSignature) {\n  throw new Error('Invalid webhook signature — request rejected');\n}\n\nreturn [{ json: $json }];"
+        "jsCode": "const crypto = require('crypto');\n\nconst appSecret = $env.WHATSAPP_APP_SECRET;\nconst signature = $json.headers['x-hub-signature-256'];\n\nlet binaryDataBuffer;\ntry {\n  binaryDataBuffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n} catch (e) {\n  throw new Error('Failed to read raw body from binary data: ' + e.message);\n}\n\nconst body = binaryDataBuffer.toString('utf8');\n\nif (!signature) {\n  throw new Error('Missing X-Hub-Signature-256 header');\n}\n\nconst expectedSignature = 'sha256=' + crypto\n  .createHmac('sha256', appSecret)\n  .update(body)\n  .digest('hex');\n\nif (signature !== expectedSignature) {\n  throw new Error('Invalid webhook signature — request rejected');\n}\n\nreturn [{ json: $json }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -870,10 +872,10 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.CRM_API_URL }}",
+        "url": "http://host.docker.internal:8000/api/automation/test",
         "sendHeaders": true,
         "specifyHeaders": "json",
-        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer {{ $env.CRM_API_TOKEN }}\"\n}",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\",\n  \"X-CRM-API-TOKEN\": \"local-test-token\"\n}",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ { \"phone\": $json.phone, \"name\": $json.name, \"company\": $json.company, \"email\": $json.email, \"ride\": $json.ride, \"source\": \"whatsapp\", \"message\": $json.ride } }}",

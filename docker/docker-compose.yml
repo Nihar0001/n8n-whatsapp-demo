@@ -6,6 +6,7 @@
 # STOP:       docker compose down
 # UPDATE:     docker compose pull && docker compose up -d
 # =============================================================================
+name: whatsapp-crm
 
 services:
 
@@ -28,6 +29,7 @@ services:
       - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
       - N8N_ENVS_MODE=${N8N_ENVS_MODE:-local}
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=${N8N_BLOCK_ENV_ACCESS_IN_NODE:-false}
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto
 
       # Auth
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
@@ -39,10 +41,10 @@ services:
       - DB_SQLITE_DATABASE=${DB_SQLITE_DATABASE:-/home/node/.n8n/database.sqlite}
 
       # Executions
-      - EXECUTIONS_PROCESS=${EXECUTIONS_PROCESS:-main}
       - N8N_CONCURRENCY_PRODUCTION_LIMIT=${N8N_CONCURRENCY_PRODUCTION_LIMIT:-10}
       - EXECUTIONS_DATA_PRUNE=${EXECUTIONS_DATA_PRUNE:-true}
       - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-168}
+      - N8N_ALLOW_ENV_VARIABLES=true
 
       # WhatsApp / CRM / AI env vars passed to workflow expressions
       - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}

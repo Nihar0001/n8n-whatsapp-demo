@@ -68,6 +68,14 @@ return [{ json: $json }];
 WHATSAPP_APP_SECRET=
 ```
 
+> [!IMPORTANT]
+> **n8n Sandbox Permissions:**
+> Since the validation uses the built-in `crypto` Node.js module, you must add the following environment variable to your `docker-compose.yml` service environment list so n8n allows importing it (already pre-configured in this repository):
+> ```yaml
+> environment:
+>   - NODE_FUNCTION_ALLOW_BUILTIN=crypto
+> ```
+
 ---
 
 ### 1.2 — CRM API Authentication (P0 CRITICAL)
