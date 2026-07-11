@@ -45,11 +45,11 @@
           "conditions": [
             {
               "id": "baf06c42-3f0b-4ba7-83e7-6c0c5c6a3120",
-              "leftValue": "={{ $json.body.entry[0].changes[0].value.messages?.[0]?.text?.body }}",
+              "leftValue": "={{ ['text', 'audio', 'document'].includes($json.body.entry[0].changes[0].value.messages?.[0]?.type) }}",
               "rightValue": "",
               "operator": {
-                "type": "string",
-                "operation": "notEmpty",
+                "type": "boolean",
+                "operation": "true",
                 "singleValue": true
               }
             }
@@ -65,7 +65,7 @@
         112
       ],
       "id": "9bf12b8c-911a-4ae0-8b48-6707e2ebec83",
-      "name": "Guard: Text Message Only"
+      "name": "Guard: Allow Text & Audio"
     },
     {
       "parameters": {
@@ -92,7 +92,7 @@
             {
               "id": "445497d9-2cbc-4ea2-896d-86f6fd8c1f92",
               "name": "message",
-              "value": "={{$json.body.entry[0].changes[0].value.messages?.[0]?.text?.body}}",
+              "value": "={{ $json.transcribed_text || $json.body.entry[0].changes[0].value.messages?.[0]?.text?.body || $json.body.entry[0].changes[0].value.messages?.[0]?.document?.filename }}",
               "type": "string"
             }
           ]
@@ -492,7 +492,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "Hello 👋  What is your name?",
+        "textBody": "Hello! 👋  Welcome to Pleximus.  May I know your full name?",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -590,7 +590,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "What is your company name?",
+        "textBody": "What is your company or organization name?",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -787,7 +787,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "Which ride are you interested in?\n\nPlease type your selection:",
+        "textBody": "Which service are you interested in?\n\n1️⃣ Helicopter Ride\n2️⃣ Yacht Charter\n3️⃣ Private Jet\n4️⃣ Luxury Car\n5️⃣ Other\n\nPlease reply with the number or service name.",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -827,7 +827,7 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "ride": "={{\n    (val => {\n      const v = val.toLowerCase().trim();\n      if (v === '1' || v.includes('helicopter')) return 'Helicopter Ride';\n      if (v === '2' || v.includes('yacht')) return 'Yacht Charter';\n      if (v === '3' || v.includes('jet') || v.includes('private')) return 'Private Jet';\n      if (v === '4' || v.includes('car') || v.includes('luxury')) return 'Luxury Car';\n      return val;\n    })($('Normalize: Extract Payload').first().json.message)\n  }}",
+            "ride": "={{\n  (val => {\n    const v = String(val).toLowerCase().trim();\n    if (v === '1' || v.includes('helicopter')) return 'Helicopter';\n    if (v === '2' || v.includes('yacht')) return 'Yacht';\n    if (v === '3' || v.includes('jet') || v.includes('private')) return 'Private';\n    if (v === '4' || v.includes('car') || v.includes('luxury')) return 'Cab';\n    if (v === '5' || v.includes('other')) return 'Incoming';\n    return val;\n  })($('Normalize: Extract Payload').first().json.message)\n}}",
             "updated_at": "={{$now}}"
           },
           "matchingColumns": [],
@@ -1020,7 +1020,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "Thanks! ✅  Your details have been saved. Our team will be in touch shortly.",
+        "textBody": "✅ Thank you!  Your enquiry has been submitted successfully.  Our team will contact you shortly.",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -1307,6 +1307,472 @@
           "name": "WhatsApp Business API — Production"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "is-text-msg",
+              "leftValue": "={{ $json.body.entry[0].changes[0].value.messages?.[0]?.type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "singleValue": false
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -848,
+        -16
+      ],
+      "id": "route-msg-type-if-id",
+      "name": "Route: Message Type"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://graph.facebook.com/v20.0/' + ($json.body.entry[0].changes[0].value.messages[0].audio?.id || $json.body.entry[0].changes[0].value.messages[0].document?.id) }}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer EAAb3FNwdqNYBR325j3taFJ2UWPgvYjwOLKK28srmi3632IeTaljaZAZCnTUgb2vo6Yfhz8fhMEJZCOErrWrQHCBY8WmcuSbLZBVlE2LOIZAha7wJtPbg2wEye1KKZAQBZBZA9rHvuEYCgKUfFKZAxkLMQw3qoDR8ZBl45f4H3blLsfZBm00QAPHSja50IhancioWTSuRQZDZD\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -688,
+        -144
+      ],
+      "id": "get-media-info-http-id",
+      "name": "WA: Get Media Info"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.url }}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Authorization\": \"Bearer EAAb3FNwdqNYBR325j3taFJ2UWPgvYjwOLKK28srmi3632IeTaljaZAZCnTUgb2vo6Yfhz8fhMEJZCOErrWrQHCBY8WmcuSbLZBVlE2LOIZAha7wJtPbg2wEye1KKZAQBZBZA9rHvuEYCgKUfFKZAxkLMQw3qoDR8ZBl45f4H3blLsfZBm00QAPHSja50IhancioWTSuRQZDZD\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -512,
+        -144
+      ],
+      "id": "download-media-binary-http-id",
+      "name": "WA: Download Binary"
+    },
+    {
+      "parameters": {
+        "jsCode": "let binaryDataBuffer;\ntry {\n  binaryDataBuffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n} catch (e) {\n  throw new Error('Failed to read binary data buffer: ' + e.message);\n}\nreturn [{\n  json: {\n    base64_data: binaryDataBuffer.toString('base64')\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -144
+      ],
+      "id": "extract-base64-code-id",
+      "name": "Extract Base64"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{ $('WA: Get Media Info').item.json.mime_type }}\",\n            \"data\": \"{{ $json.base64_data }}\"\n          }\n        },\n        {\n          \"text\": \"Transcribe this voice note/audio file exactly as spoken. Do not add any filler, introductory text, explanation, or notes. Output ONLY the transcribed words. If there is no speech or it is silent, output nothing.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -160,
+        -144
+      ],
+      "id": "gemini-transcribe-voice-http-id",
+      "name": "Gemini: Transcribe Voice Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-transcribed-text",
+              "name": "transcribed_text",
+              "value": "={{ $json.candidates?.[0]?.content?.parts?.[0]?.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "set-body",
+              "name": "body",
+              "value": "={{ $('Guard: Allow Text & Audio').item.json.body }}",
+              "type": "object"
+            },
+            {
+              "id": "set-headers",
+              "name": "headers",
+              "value": "={{ $('Guard: Allow Text & Audio').item.json.headers }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        -144
+      ],
+      "id": "assemble-payload-set-id",
+      "name": "Assemble: Transcribed Payload"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Extract lead details from the following message. If a field is not present or not explicitly stated, return null for it. Ensure the extracted 'ride' value matches one of these exact values: 'Helicopter Ride', 'Yacht Charter', 'Private Jet', 'Luxury Car', 'Other'. If it does not match, return null. Return the result in a raw JSON object with keys: 'name', 'company', 'email', 'ride'. Do not add any markdown formatting, backticks, or other text.\\n\\nUser Message: \\\"{{ $('Normalize: Extract Payload').first().json.message }}\\\"\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        250,
+        -300
+      ],
+      "id": "gemini-parse-direct-lead-http-id",
+      "name": "Gemini: Parse Direct Lead"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text || '';\nlet parsed = { name: null, company: null, email: null, ride: null };\ntry {\n  const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsed = JSON.parse(jsonStr);\n} catch (e) {}\n\nif (parsed.ride) {\n  const v = String(parsed.ride).toLowerCase().trim();\n  if (v === '1' || v.includes('helicopter')) parsed.ride = 'Helicopter';\n  else if (v === '2' || v.includes('yacht')) parsed.ride = 'Yacht';\n  else if (v === '3' || v.includes('jet') || v.includes('private')) parsed.ride = 'Private';\n  else if (v === '4' || v.includes('car') || v.includes('luxury')) parsed.ride = 'Cab';\n  else if (v === '5' || v.includes('other')) parsed.ride = 'Incoming';\n}\n\nconst isValidEmail = parsed.email && parsed.email.includes('@') && parsed.email.includes('.');\nconst allFieldsPresent = parsed.name && parsed.company && parsed.email && parsed.ride && isValidEmail;\n\nreturn [{\n  json: {\n    all_fields_present: !!allFieldsPresent,\n    name: parsed.name,\n    company: parsed.company,\n    email: parsed.email,\n    ride: parsed.ride\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        -300
+      ],
+      "id": "code-parse-gemini-output-id",
+      "name": "Code: Parse Gemini Output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "all-fields-present-cond",
+              "leftValue": "={{ $json.all_fields_present }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        650,
+        -300
+      ],
+      "id": "route-direct-lead-if-id",
+      "name": "Route: Direct Lead?"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "idle",
+            "status": "active",
+            "phone": "={{ $('Normalize: Extract Payload').first().json.phone }}",
+            "name": "={{ $('Code: Parse Gemini Output').first().json.name }}",
+            "company": "={{ $('Code: Parse Gemini Output').first().json.company }}",
+            "email": "={{ $('Code: Parse Gemini Output').first().json.email }}",
+            "ride": "={{ $('Code: Parse Gemini Output').first().json.ride }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ride",
+              "displayName": "ride",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        850,
+        -450
+      ],
+      "id": "init-direct-row-dt-id",
+      "name": "Init Direct: Create Row"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/automation/test",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Normalize: Extract Payload').first().json.phone }}\",\n  \"name\": \"{{ $('Init Direct: Create Row').first().json.name }}\",\n  \"company\": \"{{ $('Init Direct: Create Row').first().json.company }}\",\n  \"email\": \"{{ $('Init Direct: Create Row').first().json.email }}\",\n  \"ride\": \"{{ $('Init Direct: Create Row').first().json.ride }}\",\n  \"source\": \"whatsapp\",\n  \"message\": \"{{ $('Normalize: Extract Payload').first().json.message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1050,
+        -450
+      ],
+      "id": "crm-direct-submit-http-id",
+      "name": "CRM: Direct Submit"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations",
+          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Init Direct: Create Row').first().json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "completed": true,
+            "success": true,
+            "status": "synced",
+            "crm_lead_id": "={{ $json.lead_id }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "completed",
+              "displayName": "completed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "success",
+              "displayName": "success",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "crm_lead_id",
+              "displayName": "crm_lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1250,
+        -450
+      ],
+      "id": "state-mark-direct-synced-dt-id",
+      "name": "State: Mark Direct Synced"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "✅ Thank you!  Your enquiry has been submitted successfully.  Our team will contact you shortly.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1450,
+        -450
+      ],
+      "id": "wa-send-direct-success-wa-id",
+      "name": "WA: Send Direct Success Confirmation",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "rK8y7vbcNDypfnvO",
+          "name": "WhatsApp Business API — Production"
+        }
+      }
     }
   ],
   "connections": {
@@ -1325,18 +1791,18 @@
       "main": [
         [
           {
-            "node": "Guard: Text Message Only",
+            "node": "Guard: Allow Text & Audio",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Guard: Text Message Only": {
+    "Guard: Allow Text & Audio": {
       "main": [
         [
           {
-            "node": "Normalize: Extract Payload",
+            "node": "Route: Message Type",
             "type": "main",
             "index": 0
           }
@@ -1537,7 +2003,7 @@
       "main": [
         [
           {
-            "node": "Init: Create Conversation Row",
+            "node": "Gemini: Parse Direct Lead",
             "type": "main",
             "index": 0
           }
@@ -1563,6 +2029,152 @@
         [
           {
             "node": "WA: Ask Email (Retry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Message Type": {
+      "main": [
+        [
+          {
+            "node": "Normalize: Extract Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA: Get Media Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WA: Get Media Info": {
+      "main": [
+        [
+          {
+            "node": "WA: Download Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WA: Download Binary": {
+      "main": [
+        [
+          {
+            "node": "Extract Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini: Transcribe Voice Note": {
+      "main": [
+        [
+          {
+            "node": "Assemble: Transcribed Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble: Transcribed Payload": {
+      "main": [
+        [
+          {
+            "node": "Normalize: Extract Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Base64": {
+      "main": [
+        [
+          {
+            "node": "Gemini: Transcribe Voice Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini: Parse Direct Lead": {
+      "main": [
+        [
+          {
+            "node": "Code: Parse Gemini Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Parse Gemini Output": {
+      "main": [
+        [
+          {
+            "node": "Route: Direct Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Direct Lead?": {
+      "main": [
+        [
+          {
+            "node": "Init Direct: Create Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Init: Create Conversation Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Direct: Create Row": {
+      "main": [
+        [
+          {
+            "node": "CRM: Direct Submit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM: Direct Submit": {
+      "main": [
+        [
+          {
+            "node": "State: Mark Direct Synced",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Mark Direct Synced": {
+      "main": [
+        [
+          {
+            "node": "WA: Send Direct Success Confirmation",
             "type": "main",
             "index": 0
           }
