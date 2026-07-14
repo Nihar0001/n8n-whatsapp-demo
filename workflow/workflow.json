@@ -126,6 +126,15 @@
               "keyValue": "={{$json.phone}}"
             }
           ]
+        },
+        "limit": 250,
+        "options": {
+          "sort": [
+            {
+              "column": "id",
+              "direction": "desc"
+            }
+          ]
         }
       },
       "type": "n8n-nodes-base.dataTable",
@@ -306,7 +315,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "e1028769-bf5b-4b4a-bf57-f5636d478eca",
+                    "id": "cond-state-initial",
                     "leftValue": "={{$json.state}}",
                     "rightValue": "initial",
                     "operator": {
@@ -329,7 +338,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "3913751d-94ec-4b54-807d-40e0dded3a00",
+                    "id": "cond-state-waiting_name",
                     "leftValue": "={{$json.state}}",
                     "rightValue": "waiting_name",
                     "operator": {
@@ -352,7 +361,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "9b16e329-13d8-4174-ace8-4531dc32d38d",
+                    "id": "cond-state-waiting_company",
                     "leftValue": "={{$json.state}}",
                     "rightValue": "waiting_company",
                     "operator": {
@@ -375,7 +384,7 @@
                 },
                 "conditions": [
                   {
-                    "id": "a91965af-ffe3-40cc-ba8b-5bd493635db7",
+                    "id": "cond-state-waiting_email",
                     "leftValue": "={{$json.state}}",
                     "rightValue": "waiting_email",
                     "operator": {
@@ -398,9 +407,193 @@
                 },
                 "conditions": [
                   {
-                    "id": "507b6894-a190-45c8-bde0-8ec19966604c",
+                    "id": "cond-state-waiting_ride",
                     "leftValue": "={{$json.state}}",
                     "rightValue": "waiting_ride",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_identity_confirm",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_identity_confirm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_update_profile_confirm",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_update_profile_confirm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_lead_info_phone",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_lead_info_phone",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_passengers",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_passengers",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_from_place",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_from_place",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_to_place",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_to_place",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_from_date",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_from_date",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cond-state-waiting_to_date",
+                    "leftValue": "={{$json.state}}",
+                    "rightValue": "waiting_to_date",
                     "operator": {
                       "type": "string",
                       "operation": "equals",
@@ -438,7 +631,8 @@
         "filters": {
           "conditions": [
             {
-              "keyValue": "={{$json.id}}"
+              "keyValue": "={{ $('Init: Create Conversation Row').first().json.id }}",
+              "keyName": "id"
             }
           ]
         },
@@ -506,8 +700,8 @@
       "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API â€” Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -525,7 +719,8 @@
         "filters": {
           "conditions": [
             {
-              "keyValue": "={{$json.id}}"
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
             }
           ]
         },
@@ -590,7 +785,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "What is your company or organization name?",
+        "textBody": "What is your company or organization name? (Reply 'skip' to bypass this)",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -604,8 +799,8 @@
       "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API â€” Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -623,7 +818,8 @@
         "filters": {
           "conditions": [
             {
-              "keyValue": "={{$json.id}}"
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
             }
           ]
         },
@@ -688,7 +884,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "What is your email address?",
+        "textBody": "What is your email address? (Reply 'skip' to bypass this)",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -702,8 +898,8 @@
       "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API â€” Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -721,7 +917,8 @@
         "filters": {
           "conditions": [
             {
-              "keyValue": "={{$json.id}}"
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
             }
           ]
         },
@@ -779,8 +976,7 @@
         304
       ],
       "id": "d57e550c-579a-45b3-b6f8-5b1d1c4f07c6",
-      "name": "State: Save Email → waiting_ride",
-      "alwaysOutputData": true
+      "name": "State: Save Email → waiting_ride"
     },
     {
       "parameters": {
@@ -801,73 +997,10 @@
       "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API â€” Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "dataTableId": {
-          "__rl": true,
-          "value": "NLjuRoc0CaFmxdda",
-          "mode": "list",
-          "cachedResultName": "whatsapp_conversations",
-          "cachedResultUrl": "/projects/LGTuto3E9zQda5Io/datatables/NLjuRoc0CaFmxdda"
-        },
-        "matchType": "allConditions",
-        "filters": {
-          "conditions": [
-            {
-              "keyValue": "={{$json.id}}"
-            }
-          ]
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "ride": "={{\n  (val => {\n    const v = String(val).toLowerCase().trim();\n    if (v === '1' || v.includes('helicopter')) return 'Helicopter';\n    if (v === '2' || v.includes('yacht')) return 'Yacht';\n    if (v === '3' || v.includes('jet') || v.includes('private')) return 'Private';\n    if (v === '4' || v.includes('car') || v.includes('luxury')) return 'Cab';\n    if (v === '5' || v.includes('other')) return 'Incoming';\n    return val;\n  })($('Normalize: Extract Payload').first().json.message)\n}}",
-            "updated_at": "={{$now}}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "ride",
-              "displayName": "ride",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "readOnly": false,
-              "removed": false
-            },
-            {
-              "id": "updated_at",
-              "displayName": "updated_at",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "readOnly": false,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {
-          "dryRun": false
-        }
-      },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1,
-      "position": [
-        1056,
-        304
-      ],
-      "id": "a3b4c5d6-e7f8-9012-cdef-345678901234",
-      "name": "State: Save Ride"
     },
     {
       "parameters": {
@@ -878,7 +1011,7 @@
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\",\n  \"X-CRM-API-TOKEN\": \"local-test-token\"\n}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { \"phone\": $json.phone, \"name\": $json.name, \"company\": $json.company, \"email\": $json.email, \"ride\": $json.ride, \"source\": \"whatsapp\", \"message\": $json.ride } }}",
+        "jsonBody": "={\n  \"phone\": \"{{ $json.lead_info_phone || $json.phone }}\",\n  \"name\": \"{{ $json.name }}\",\n  \"company\": \"{{ $json.company === 'skip' ? null : $json.company }}\",\n  \"email\": \"{{ $json.email === 'skip' ? null : $json.email }}\",\n  \"ride\": \"{{ $json.ride }}\",\n  \"source\": \"whatsapp\",\n  \"message\": \"{{ $json.ride + ' booking enquiry | Passengers: ' + $json.number_of_passengers + ' | Route: ' + $json.from_place + ' to ' + $json.to_place + ' | Date: ' + $json.from_date + ($json.lead_info_phone ? ' | WhatsApp Reachout: ' + $json.phone : '') }}\",\n  \"number_of_passengers\": \"{{ $json.number_of_passengers }}\",\n  \"from_place\": \"{{ $json.from_place }}\",\n  \"to_place\": \"{{ $json.to_place }}\",\n  \"from_date\": \"{{ $json.from_date }}\",\n  \"to_date\": \"{{ $json.to_date === 'skip' ? null : $json.to_date }}\"\n}",
         "options": {
           "timeout": "30000"
         }
@@ -911,7 +1044,7 @@
           "conditions": [
             {
               "keyName": "id",
-              "keyValue": "={{$('Route: By Conversation State').item.json.id}}"
+              "keyValue": "={{ $('Check: Restart Required').first().json.id }}"
             }
           ]
         },
@@ -1034,8 +1167,8 @@
       "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API â€” Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -1054,7 +1187,7 @@
           "conditions": [
             {
               "keyName": "id",
-              "keyValue": "={{$('Route: By Conversation State').item.json.id}}"
+              "keyValue": "={{ $('Check: Restart Required').first().json.id }}"
             }
           ]
         },
@@ -1166,8 +1299,8 @@
       "webhookId": "43ee3f25-f96f-4aef-933b-d3d0c9f1b268",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API â€” Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -1263,7 +1396,7 @@
           "conditions": [
             {
               "id": "email-validation-cond",
-              "leftValue": "={{ /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test($('Normalize: Extract Payload').first().json.message) }}",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.toLowerCase().trim() === 'skip' || /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test($('Normalize: Extract Payload').first().json.message) }}",
               "rightValue": "",
               "operator": {
                 "type": "boolean",
@@ -1290,7 +1423,7 @@
         "operation": "send",
         "phoneNumberId": "1272089145976311",
         "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
-        "textBody": "Please enter a valid email address.",
+        "textBody": "Please enter a valid email address (or reply 'skip' to bypass this).",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.whatsApp",
@@ -1303,8 +1436,8 @@
       "name": "WA: Ask Email (Retry)",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API — Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     },
@@ -1462,7 +1595,7 @@
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Extract lead details from the following message. If a field is not present or not explicitly stated, return null for it. Ensure the extracted 'ride' value matches one of these exact values: 'Helicopter Ride', 'Yacht Charter', 'Private Jet', 'Luxury Car', 'Other'. If it does not match, return null. Return the result in a raw JSON object with keys: 'name', 'company', 'email', 'ride'. Do not add any markdown formatting, backticks, or other text.\\n\\nUser Message: \\\"{{ $('Normalize: Extract Payload').first().json.message }}\\\"\"\n        }\n      ]\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Extract lead details from the following message. If a field is not present or not explicitly stated, return null for it. Ensure the extracted 'ride' value matches one of these exact values: 'Helicopter Ride', 'Yacht Charter', 'Private Jet', 'Luxury Car', 'Other'. If it does not match, return null. Return the result in a raw JSON object with keys: 'name', 'company', 'email', 'ride', 'number_of_passengers', 'from_place', 'to_place', 'from_date', 'to_date'. For dates, convert any relative dates (like 'tomorrow', 'next Monday', or specific dates mentioned) to the exact format 'YYYY-MM-DD' (or 'YYYY-MM-DD HH:MM' if time is explicitly specified by the user) relative to the current local time (Asia/Kolkata timezone): {{ $now.setZone('Asia/Kolkata').toFormat('yyyy-MM-dd HH:mm') }}. Do not append any time (like 12:00) by default if only a date is mentioned. Do not add any markdown formatting, backticks, or other text.\\n\\nUser Message: \\\"{{ $('Normalize: Extract Payload').first().json.message }}\\\"\"\n        }\n      ]\n    }\n  ]\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1476,7 +1609,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const text = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text || '';\nlet parsed = { name: null, company: null, email: null, ride: null };\ntry {\n  const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsed = JSON.parse(jsonStr);\n} catch (e) {}\n\nif (parsed.ride) {\n  const v = String(parsed.ride).toLowerCase().trim();\n  if (v === '1' || v.includes('helicopter')) parsed.ride = 'Helicopter';\n  else if (v === '2' || v.includes('yacht')) parsed.ride = 'Yacht';\n  else if (v === '3' || v.includes('jet') || v.includes('private')) parsed.ride = 'Private';\n  else if (v === '4' || v.includes('car') || v.includes('luxury')) parsed.ride = 'Cab';\n  else if (v === '5' || v.includes('other')) parsed.ride = 'Incoming';\n}\n\nconst isValidEmail = parsed.email && parsed.email.includes('@') && parsed.email.includes('.');\nconst allFieldsPresent = parsed.name && parsed.company && parsed.email && parsed.ride && isValidEmail;\n\nreturn [{\n  json: {\n    all_fields_present: !!allFieldsPresent,\n    name: parsed.name,\n    company: parsed.company,\n    email: parsed.email,\n    ride: parsed.ride\n  }\n}];"
+        "jsCode": "const text = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text || '';\nlet parsed = { name: null, company: null, email: null, ride: null, number_of_passengers: null, from_place: null, to_place: null, from_date: null, to_date: null };\ntry {\n  const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();\n  parsed = JSON.parse(jsonStr);\n} catch (e) {}\n\nif (parsed.ride) {\n  const v = String(parsed.ride).toLowerCase().trim();\n  if (v === '1' || v.includes('helicopter')) parsed.ride = 'Helicopter Ride';\n  else if (v === '2' || v.includes('yacht')) parsed.ride = 'Yacht Charter';\n  else if (v === '3' || v.includes('jet') || v.includes('private')) parsed.ride = 'Private Jet';\n  else if (v === '4' || v.includes('car') || v.includes('luxury')) parsed.ride = 'Luxury Car';\n  else if (v === '5' || v.includes('other')) parsed.ride = 'Other';\n}\n\nconst isValidEmail = !parsed.email || parsed.email === 'skip' || (parsed.email.includes('@') && parsed.email.includes('.'));\nconst allFieldsPresent = parsed.name && parsed.ride && parsed.number_of_passengers && parsed.from_place && parsed.to_place && parsed.from_date && isValidEmail;\n\nreturn [{\n  json: {\n    all_fields_present: !!allFieldsPresent,\n    name: parsed.name || null,\n    company: parsed.company || 'skip',\n    email: parsed.email || 'skip',\n    ride: parsed.ride || null,\n    number_of_passengers: parsed.number_of_passengers ? String(parsed.number_of_passengers) : null,\n    from_place: parsed.from_place || null,\n    to_place: parsed.to_place || null,\n    from_date: parsed.from_date || null,\n    to_date: parsed.to_date || 'skip'\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1541,7 +1674,12 @@
             "company": "={{ $('Code: Parse Gemini Output').first().json.company }}",
             "email": "={{ $('Code: Parse Gemini Output').first().json.email }}",
             "ride": "={{ $('Code: Parse Gemini Output').first().json.ride }}",
-            "updated_at": "={{ $now }}"
+            "updated_at": "={{ $now }}",
+            "number_of_passengers": "={{ $('Code: Parse Gemini Output').first().json.number_of_passengers }}",
+            "from_place": "={{ $('Code: Parse Gemini Output').first().json.from_place }}",
+            "to_place": "={{ $('Code: Parse Gemini Output').first().json.to_place }}",
+            "from_date": "={{ $('Code: Parse Gemini Output').first().json.from_date }}",
+            "to_date": "={{ $('Code: Parse Gemini Output').first().json.to_date }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -1624,6 +1762,31 @@
               "type": "dateTime",
               "readOnly": false,
               "removed": false
+            },
+            {
+              "id": "number_of_passengers",
+              "displayName": "number_of_passengers",
+              "type": "string"
+            },
+            {
+              "id": "from_place",
+              "displayName": "from_place",
+              "type": "string"
+            },
+            {
+              "id": "to_place",
+              "displayName": "to_place",
+              "type": "string"
+            },
+            {
+              "id": "from_date",
+              "displayName": "from_date",
+              "type": "string"
+            },
+            {
+              "id": "to_date",
+              "displayName": "to_date",
+              "type": "string"
             }
           ]
         },
@@ -1644,10 +1807,10 @@
         "url": "http://host.docker.internal:8000/api/automation/test",
         "sendHeaders": true,
         "specifyHeaders": "json",
-        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\",\n  \"X-CRM-API-TOKEN\": \"local-test-token\"\n}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"phone\": \"{{ $('Normalize: Extract Payload').first().json.phone }}\",\n  \"name\": \"{{ $('Init Direct: Create Row').first().json.name }}\",\n  \"company\": \"{{ $('Init Direct: Create Row').first().json.company }}\",\n  \"email\": \"{{ $('Init Direct: Create Row').first().json.email }}\",\n  \"ride\": \"{{ $('Init Direct: Create Row').first().json.ride }}\",\n  \"source\": \"whatsapp\",\n  \"message\": \"{{ $('Normalize: Extract Payload').first().json.message }}\"\n}",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Normalize: Extract Payload').first().json.phone }}\",\n  \"name\": \"{{ $('Init Direct: Create Row').first().json.name }}\",\n  \"company\": \"{{ $('Init Direct: Create Row').first().json.company === 'skip' ? null : $('Init Direct: Create Row').first().json.company }}\",\n  \"email\": \"{{ $('Init Direct: Create Row').first().json.email === 'skip' ? null : $('Init Direct: Create Row').first().json.email }}\",\n  \"ride\": \"{{ $('Init Direct: Create Row').first().json.ride }}\",\n  \"source\": \"whatsapp\",\n  \"message\": \"{{ $('Normalize: Extract Payload').first().json.message }}\",\n  \"number_of_passengers\": \"{{ $('Init Direct: Create Row').first().json.number_of_passengers }}\",\n  \"from_place\": \"{{ $('Init Direct: Create Row').first().json.from_place }}\",\n  \"to_place\": \"{{ $('Init Direct: Create Row').first().json.to_place }}\",\n  \"from_date\": \"{{ $('Init Direct: Create Row').first().json.from_date }}\",\n  \"to_date\": \"{{ $('Init Direct: Create Row').first().json.to_date === 'skip' ? null : $('Init Direct: Create Row').first().json.to_date }}\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1657,7 +1820,11 @@
         -450
       ],
       "id": "crm-direct-submit-http-id",
-      "name": "CRM: Direct Submit"
+      "name": "CRM: Direct Submit",
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
     },
     {
       "parameters": {
@@ -1673,7 +1840,8 @@
         "filters": {
           "conditions": [
             {
-              "keyValue": "={{ $('Init Direct: Create Row').first().json.id }}"
+              "keyValue": "={{ $('Init Direct: Create Row').first().json.id }}",
+              "keyName": "id"
             }
           ]
         },
@@ -1769,8 +1937,1365 @@
       "name": "WA: Send Direct Success Confirmation",
       "credentials": {
         "whatsAppApi": {
-          "id": "rK8y7vbcNDypfnvO",
-          "name": "WhatsApp Business API — Production"
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'http://host.docker.internal:8000/api/automation/client-check?phone=' + $('Normalize: Extract Payload').first().json.phone }}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\",\n  \"X-CRM-API-TOKEN\": \"local-test-token\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        450,
+        1100
+      ],
+      "id": "crm-client-lookup-id",
+      "name": "CRM: Client Lookup"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "exists-check-cond",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        650,
+        1100
+      ],
+      "id": "check-client-exists-id",
+      "name": "Check: Client Exists?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Init: Create Conversation Row').first().json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_identity_confirm",
+            "name": "={{ $('CRM: Client Lookup').first().json.client.name }}",
+            "email": "={{ $('CRM: Client Lookup').first().json.client.email }}",
+            "company": "={{ $('CRM: Client Lookup').first().json.client.company }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        850,
+        1000
+      ],
+      "id": "state-set-waiting-identity-confirm-id",
+      "name": "State: Set waiting_identity_confirm"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "={{ 'Welcome back! 👋\\n\\nWe found your existing profile.\\n\\nEmail: ' + $('CRM: Client Lookup').first().json.client.email + '\\nPhone: +' + $('Normalize: Extract Payload').first().json.phone + '\\n\\nReply YES to continue or UPDATE to modify your details.' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1050,
+        1000
+      ],
+      "id": "wa-ask-identity-confirm-id",
+      "name": "WA: Ask Identity Confirm",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-confirm-yes-cond",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.trim() }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "id-confirm-yes-text",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.toLowerCase() }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        600,
+        1300
+      ],
+      "id": "check-confirm-identity-id",
+      "name": "Check: Confirm Identity?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_update_profile_confirm",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        1250
+      ],
+      "id": "state-set-waiting-update-profile-confirm-id",
+      "name": "State: Set waiting_update_profile_confirm"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Would you like to update your email or company details?\n\n1. Yes\n2. No",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        1250
+      ],
+      "id": "wa-ask-profile-update-confirm-id",
+      "name": "WA: Ask Profile Update Confirm",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_lead_info_phone",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        1370
+      ],
+      "id": "state-set-waiting-lead-info-phone-id",
+      "name": "State: Set waiting_lead_info_phone"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Please enter the contact number through which you should be connected:",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        1370
+      ],
+      "id": "wa-ask-lead-info-phone-id",
+      "name": "WA: Ask Lead Info Phone",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "profile-update-yes-cond",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.trim() }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "profile-update-yes-text",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.toLowerCase() }}",
+              "rightValue": "update",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "profile-update-modify-text",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.toLowerCase() }}",
+              "rightValue": "modify",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        600,
+        1550
+      ],
+      "id": "check-update-profile-id",
+      "name": "Check: Update Profile?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_company",
+            "company": null,
+            "email": null,
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        1500
+      ],
+      "id": "state-clear-for-update-waiting-company-id",
+      "name": "State: Clear for Update → waiting_company"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_ride",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        1600
+      ],
+      "id": "state-keep-profile-waiting-ride-id",
+      "name": "State: Keep Profile → waiting_ride"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_name",
+            "name": null,
+            "company": null,
+            "email": null,
+            "lead_info_phone": "={{ $('Normalize: Extract Payload').first().json.message?.trim() }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "type": "string"
+            },
+            {
+              "id": "lead_info_phone",
+              "displayName": "lead_info_phone",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        1750
+      ],
+      "id": "state-save-lead-phone-waiting-name-id",
+      "name": "State: Save Lead Phone → waiting_name"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_passengers",
+            "ride": "={{\n  (val => {\n    const v = String(val).toLowerCase().trim();\n    if (v === '1' || v.includes('helicopter')) return 'Helicopter Ride';\n    if (v === '2' || v.includes('yacht')) return 'Yacht Charter';\n    if (v === '3' || v.includes('jet') || v.includes('private')) return 'Private Jet';\n    if (v === '4' || v.includes('car') || v.includes('luxury')) return 'Luxury Car';\n    if (v === '5' || v.includes('other')) return 'Other';\n    return val;\n  })($('Normalize: Extract Payload').first().json.message)\n}}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "ride",
+              "displayName": "ride",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1056,
+        304
+      ],
+      "id": "state-save-ride-waiting-passengers-id",
+      "name": "State: Save Ride → waiting_passengers"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "How many passengers will be traveling?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1256,
+        304
+      ],
+      "id": "wa-ask-passengers-id",
+      "name": "WA: Ask Passengers",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "passengers-valid-cond",
+              "leftValue": "={{ /^\\d+$/.test($('Normalize: Extract Payload').first().json.message) && parseInt($('Normalize: Extract Payload').first().json.message) >= 1 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        600,
+        1950
+      ],
+      "id": "check-passengers-valid-id",
+      "name": "Check: Passengers Valid?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_from_place",
+            "number_of_passengers": "={{ parseInt($('Normalize: Extract Payload').first().json.message) }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "number_of_passengers",
+              "displayName": "number_of_passengers",
+              "type": "number"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        1900
+      ],
+      "id": "state-save-passengers-waiting-from-place-id",
+      "name": "State: Save Passengers → waiting_from_place"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "What is your departure location (From Place)?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        1900
+      ],
+      "id": "wa-ask-from-place-id",
+      "name": "WA: Ask From Place",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Please enter a valid number of passengers traveling (e.g. 2):",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        2020
+      ],
+      "id": "wa-ask-passengers-retry-id",
+      "name": "WA: Ask Passengers (Retry)",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_to_place",
+            "from_place": "={{ $('Normalize: Extract Payload').first().json.message?.trim() }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "from_place",
+              "displayName": "from_place",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        2150
+      ],
+      "id": "state-save-from-place-waiting-to-place-id",
+      "name": "State: Save From Place → waiting_to_place"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "What is your destination location (To Place)?",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        2150
+      ],
+      "id": "wa-ask-to-place-id",
+      "name": "WA: Ask To Place",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_from_date",
+            "to_place": "={{ $('Normalize: Extract Payload').first().json.message?.trim() }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "to_place",
+              "displayName": "to_place",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        2300
+      ],
+      "id": "state-save-to-place-waiting-from-date-id",
+      "name": "State: Save To Place → waiting_from_date"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "What is your departure date? (e.g., 2026-07-15 or tomorrow)",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        2300
+      ],
+      "id": "wa-ask-from-date-id",
+      "name": "WA: Ask From Date",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Parse the following natural language date description into the format 'YYYY-MM-DD' (or 'YYYY-MM-DD HH:MM' if time is explicitly specified by the user). Use the current date/time context: '{{ $now.toFormat('yyyy-MM-dd HH:mm') }}' (today is {{ $now.toFormat('cccc, MMMM d, yyyy') }}). Do not append any time (like 12:00) by default if the input is just a date. If the input is invalid or doesn't refer to a valid date, return the exact string 'invalid'. Return only the raw string without markdown or backticks.\\n\\nInput: \\\"{{ $('Normalize: Extract Payload').first().json.message }}\\\"\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        600,
+        2450
+      ],
+      "id": "gemini-parse-from-date-id",
+      "name": "Gemini: Parse From Date"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'invalid';\nreturn [{ json: { date: text, is_valid: text !== 'invalid' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        2450
+      ],
+      "id": "code-parse-from-date-output-id",
+      "name": "Code: Parse From Date Output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "from-date-valid-cond",
+              "leftValue": "={{ $json.is_valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1000,
+        2450
+      ],
+      "id": "check-from-date-valid-id",
+      "name": "Check: From Date Valid?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Check: Restart Required').first().json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_to_date",
+            "from_date": "={{ $json.date }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "from_date",
+              "displayName": "from_date",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        2400
+      ],
+      "id": "state-save-from-date-waiting-to-date-id",
+      "name": "State: Save From Date → waiting_to_date"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "What is your return date? (Reply 'skip' for a one-way trip)",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1400,
+        2400
+      ],
+      "id": "wa-ask-to-date-id",
+      "name": "WA: Ask To Date",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Please enter a valid departure date (e.g., 2026-07-15 or next Sunday):",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        2520
+      ],
+      "id": "wa-ask-from-date-retry-id",
+      "name": "WA: Ask From Date (Retry)",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "to-date-skip-cond",
+              "leftValue": "={{ $('Normalize: Extract Payload').first().json.message?.toLowerCase().trim() }}",
+              "rightValue": "skip",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        600,
+        2700
+      ],
+      "id": "check-to-date-skipped-id",
+      "name": "Check: To Date Skipped?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Check: Restart Required').first().json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_crm_submit",
+            "to_date": "skip",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "to_date",
+              "displayName": "to_date",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        2650
+      ],
+      "id": "state-save-to-date-skipped-crm-submit-id",
+      "name": "State: Save To Date Skipped → crm_submit"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Parse the following natural language date description into the format 'YYYY-MM-DD' (or 'YYYY-MM-DD HH:MM' if time is explicitly specified by the user). Use the current date/time context: '{{ $now.toFormat('yyyy-MM-dd HH:mm') }}' (today is {{ $now.toFormat('cccc, MMMM d, yyyy') }}). Do not append any time (like 12:00) by default if the input is just a date. If the input is invalid or doesn't refer to a valid date, return the exact string 'invalid'. Return only the raw string without markdown or backticks.\\n\\nInput: \\\"{{ $('Normalize: Extract Payload').first().json.message }}\\\"\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        800,
+        2770
+      ],
+      "id": "gemini-parse-to-date-id",
+      "name": "Gemini: Parse To Date"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'invalid';\nreturn [{ json: { date: text, is_valid: text !== 'invalid' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        2770
+      ],
+      "id": "code-parse-to-date-output-id",
+      "name": "Code: Parse To Date Output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "to-date-valid-cond",
+              "leftValue": "={{ $json.is_valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        2770
+      ],
+      "id": "check-to-date-valid-id",
+      "name": "Check: To Date Valid?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "NLjuRoc0CaFmxdda",
+          "mode": "list",
+          "cachedResultName": "whatsapp_conversations"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Check: Restart Required').first().json.id }}",
+              "keyName": "id"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "state": "waiting_crm_submit",
+            "to_date": "={{ $json.date }}",
+            "updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "state",
+              "displayName": "state",
+              "type": "string"
+            },
+            {
+              "id": "to_date",
+              "displayName": "to_date",
+              "type": "string"
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "type": "dateTime"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1400,
+        2720
+      ],
+      "id": "state-save-to-date-crm-submit-id",
+      "name": "State: Save To Date → crm_submit"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "Please enter a valid return date (e.g., 2026-07-18 or reply 'skip' to bypass):",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1400,
+        2840
+      ],
+      "id": "wa-ask-to-date-retry-id",
+      "name": "WA: Ask To Date (Retry)",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1272089145976311",
+        "recipientPhoneNumber": "={{ '+' + $('Normalize: Extract Payload').first().json.phone }}",
+        "textBody": "⚠️ We received your enquiry but encountered an issue saving it. Our team has been notified and will follow up with you shortly.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1250,
+        -350
+      ],
+      "id": "wa-send-direct-error-msg-id",
+      "name": "WA: Send Direct Error Message",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "GQnYRAecM7QoV4yJ",
+          "name": "WhatsApp account"
         }
       }
     }
@@ -1847,7 +3372,7 @@
       "main": [
         [
           {
-            "node": "State: initial → Set waiting_name",
+            "node": "CRM: Client Lookup",
             "type": "main",
             "index": 0
           }
@@ -1875,7 +3400,63 @@
         ],
         [
           {
-            "node": "State: Save Ride",
+            "node": "State: Save Ride → waiting_passengers",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: Confirm Identity?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: Update Profile?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Save Lead Phone → waiting_name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: Passengers Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Save From Place → waiting_to_place",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Save To Place → waiting_from_date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini: Parse From Date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: To Date Skipped?",
             "type": "main",
             "index": 0
           }
@@ -1920,17 +3501,6 @@
         [
           {
             "node": "WA: Ask Ride",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "State: Save Ride": {
-      "main": [
-        [
-          {
-            "node": "CRM: Submit Lead",
             "type": "main",
             "index": 0
           }
@@ -2167,6 +3737,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "WA: Send Direct Error Message",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -2175,6 +3752,330 @@
         [
           {
             "node": "WA: Send Direct Success Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM: Client Lookup": {
+      "main": [
+        [
+          {
+            "node": "Check: Client Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Client Exists?": {
+      "main": [
+        [
+          {
+            "node": "State: Set waiting_identity_confirm",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: initial → Set waiting_name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Set waiting_identity_confirm": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Identity Confirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Confirm Identity?": {
+      "main": [
+        [
+          {
+            "node": "State: Keep Profile → waiting_ride",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: Update Profile?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Set waiting_update_profile_confirm": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Profile Update Confirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Set waiting_lead_info_phone": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Lead Info Phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Update Profile?": {
+      "main": [
+        [
+          {
+            "node": "State: Clear for Update → waiting_company",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "State: Set waiting_lead_info_phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Clear for Update → waiting_company": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Keep Profile → waiting_ride": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Ride",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Lead Phone → waiting_name": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Ride → waiting_passengers": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask Passengers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Passengers Valid?": {
+      "main": [
+        [
+          {
+            "node": "State: Save Passengers → waiting_from_place",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA: Ask Passengers (Retry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save Passengers → waiting_from_place": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask From Place",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save From Place → waiting_to_place": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask To Place",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save To Place → waiting_from_date": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask From Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini: Parse From Date": {
+      "main": [
+        [
+          {
+            "node": "Code: Parse From Date Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Parse From Date Output": {
+      "main": [
+        [
+          {
+            "node": "Check: From Date Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: From Date Valid?": {
+      "main": [
+        [
+          {
+            "node": "State: Save From Date → waiting_to_date",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA: Ask From Date (Retry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save From Date → waiting_to_date": {
+      "main": [
+        [
+          {
+            "node": "WA: Ask To Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: To Date Skipped?": {
+      "main": [
+        [
+          {
+            "node": "State: Save To Date Skipped → crm_submit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini: Parse To Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save To Date Skipped → crm_submit": {
+      "main": [
+        [
+          {
+            "node": "CRM: Submit Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini: Parse To Date": {
+      "main": [
+        [
+          {
+            "node": "Code: Parse To Date Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Parse To Date Output": {
+      "main": [
+        [
+          {
+            "node": "Check: To Date Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: To Date Valid?": {
+      "main": [
+        [
+          {
+            "node": "State: Save To Date → crm_submit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WA: Ask To Date (Retry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State: Save To Date → crm_submit": {
+      "main": [
+        [
+          {
+            "node": "CRM: Submit Lead",
             "type": "main",
             "index": 0
           }
@@ -2209,5 +4110,6 @@
       "createdAt": "2026-07-08T00:00:00.000Z",
       "updatedAt": "2026-07-08T00:00:00.000Z"
     }
-  ]
+  ],
+  "id": "tWAzEdYfzua42JkS"
 }
