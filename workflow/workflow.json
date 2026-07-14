@@ -1533,7 +1533,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=REDACTED_GEMINI_API_KEY",
         "sendHeaders": true,
         "specifyHeaders": "json",
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
@@ -1589,7 +1589,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=REDACTED_GEMINI_API_KEY",
         "sendHeaders": true,
         "specifyHeaders": "json",
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
@@ -2876,7 +2876,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=REDACTED_GEMINI_API_KEY",
         "sendHeaders": true,
         "specifyHeaders": "json",
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
@@ -3133,7 +3133,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=AQ.Ab8RN6JiW31ncJLrJKKdne4zSarbp4voQFkSttPmnZLez0QK9Q",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=REDACTED_GEMINI_API_KEY",
         "sendHeaders": true,
         "specifyHeaders": "json",
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",

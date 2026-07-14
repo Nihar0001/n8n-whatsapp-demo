@@ -46,7 +46,87 @@ A production-grade conversational lead capture automation. Customers interact vi
 ---
 
 ## 2. Architecture
-
+flowchart TD
+    A[Customer WhatsApp] -->|HTTP POST| B[Meta Cloud API]
+    B --> C[n8n Webhook<br>/webhook/whatsapp-lead-capture]
+    
+    C --> D{Text Guard}
+    D -->|Drop Non-Text| STOP[End]
+    D -->|Valid Text| E[Normalize Payload<br>name, phone, message]
+    
+    E --> F[Lookup Conversation<br>DataTable by phone]
+    
+    F --> G{Exists?}
+    G -->|NO| H[Insert Row] --> I[Route by State]
+    G -->|YES| I
+    
+    I -->|initial| J[Ask Name]
+    I -->|waiting_name| K[Save Name<br>Ask Company]
+    I -->|waiting_co| L[Save Company<br>Ask Email]
+    I -->|waiting_email| M[Save Email<br>Ask Ride]
+    
+    M --> N[waiting_ride]
+    N --> O[Save Ride]
+    O --> P[Call CRM API] --> Q[(Laravel)]
+    
+    P --> R{CRM Result}
+    R -->|Success| S[Mark Synced<br>Send Confirmation]
+    R -->|Error| T[Mark Failed<br>Send Apology]
+[ Customer WhatsApp ]
+         │
+         ▼ (HTTP POST)
+[ Meta Cloud API ]
+         │
+         ▼
+[ n8n Webhook: /webhook/whatsapp-lead-capture ]
+         │
+         ▼
+┌─────────────────────────────────┐
+│ Text Guard (If)                 │
+│ ├─► Drop non-text (Stop)        │
+│ └─► Pass text                   │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+[ Normalize Payload: name, phone, message ]
+                 │
+                 ▼
+[ Lookup Conversation (DataTable by phone) ]
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│ Exists?                         │
+│ ├─► NO  ──► Insert Row          │
+│ └─► YES ──┐                     │
+└───────────┼─────────────────────┘
+            │
+            ▼
+[ Route by State (Switch) ]
+  │
+  ├─► initial        ──► Ask Name
+  │
+  ├─► waiting_name   ──► Save Name ──► Ask Company
+  │
+  ├─► waiting_co     ──► Save Company ──► Ask Email
+  │
+  └─► waiting_email  ──► Save Email ──► Ask Ride
+                             │
+                             ▼
+                     [ waiting_ride ]
+                             │
+                             ▼
+                     [ Save Ride ]
+                             │
+                             ▼
+                     [ Call CRM API ] ──► [ Laravel ]
+                             │
+                     ┌───────┴───────┐
+                     ▼               ▼
+                 (Success)        (Error)
+                     │               │
+                     ▼               ▼
+               Mark Synced      Mark Failed
+               Send Confirm     Send Apology
 ```
 Customer WhatsApp
       │

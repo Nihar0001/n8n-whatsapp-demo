@@ -1,0 +1,464 @@
+{
+  "name": "Call Recording AI Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        150
+      ],
+      "id": "manual-trigger-id",
+      "name": "When clicking 'Test workflow'"
+    },
+    {
+      "parameters": {
+        "interval": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.interval",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ],
+      "id": "poll-interval-id",
+      "name": "Poll Interval"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8000/api/call-recordings/pending",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"crm-api-token\": \"local-test-token\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        300
+      ],
+      "id": "crm-get-pending-id",
+      "name": "CRM: Get Pending Recordings"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "check-pending-cond",
+              "leftValue": "={{$json.recordings?.length > 0}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        500,
+        300
+      ],
+      "id": "check-pending-id",
+      "name": "Check Pending"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "recordings",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        300
+      ],
+      "id": "split-recordings-id",
+      "name": "Split Recordings List"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$json.file_url.replace('localhost', 'host.docker.internal')}}",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"crm-api-token\": \"local-test-token\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        900,
+        300
+      ],
+      "id": "download-audio-id",
+      "name": "Download Audio File",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "let binaryDataBuffer;\ntry {\n  binaryDataBuffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n} catch (e) {\n  throw new Error('Failed to read binary data buffer: ' + e.message);\n}\nconst mimeType = $input.first().binary?.data?.mimeType || 'audio/mpeg';\nreturn [{\n  json: {\n    base64_data: binaryDataBuffer.toString('base64'),\n    mime_type: mimeType\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ],
+      "id": "extract-base64-id",
+      "name": "Extract Base64",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=REDACTED_GEMINI_API_KEY",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"inlineData\": {\n            \"mimeType\": \"{{$json.mime_type}}\",\n            \"data\": \"{{$json.base64_data}}\"\n          }\n        },\n        {\n          \"text\": \"You are an expert CRM assistant. Analyze the uploaded call recording (which could be a monologue or a 2-person conversation between an agent/representative and a customer/lead) and extract structured information for a Laravel CRM. Follow the schema exactly.\\n\\nRules for 2-person calls:\\n- Differentiate between the speakers in the conversation (speaker diarization).\\n- Identify the customer/lead (who is making the inquiry or booking request) and extract lead_info ONLY for the customer (do NOT extract the agent's name, email, or representative details as the lead name).\\n- Format the transcript field with clear speaker turns, e.g., 'Agent: Hello, how can I help you?\\nCustomer: Hi, I want to book...'\\n\\nGeneral Rules:\\n- Extract name, phone, email, company, product_requested, and number_of_passengers for the lead.\\n- Extract ride_info: from_date, to_date, from_place, to_place. Format all dates as YYYY-MM-DD HH:MM:SS (default time to 12:00:00 if not mentioned). If travel dates are completely unknown, omit or return null.\\n- For next_followup_date, recommend a logical next touchpoint (format YYYY-MM-DD HH:MM:SS) and describe the action task in followup_note.\\n- Assign a conversion_score (0-100) based on purchase intent and objections.\\n- Provide a summary and a verbatim transcript in the response.\\n- Return the output in clean JSON matching the response schema. Do not wrap in markdown code blocks.\\n\\nResponse Schema:\\n{\\n  \\\"transcript\\\": \\\"Verbatim transcript with speaker labels\\\",\\n  \\\"summary\\\": \\\"Summary of call\\\",\\n  \\\"intent\\\": \\\"High purchase intent / Low intent / Inquiry / Complaint\\\",\\n  \\\"conversion_score\\\": 90,\\n  \\\"lead_info\\\": {\\n    \\\"name\\\": \\\"Jane Smith\\\",\\n    \\\"phone\\\": \\\"+91-9876543210\\\",\\n    \\\"email\\\": \\\"janesmith@example.com\\\",\\n    \\\"company\\\": \\\"Smith Logistics\\\",\\n    \\\"product_requested\\\": \\\"Plane Ride\\\",\\n    \\\"number_of_passengers\\\": 4,\\n    \\\"ride_info\\\": {\\n      \\\"from_date\\\": \\\"2026-09-01 10:00:00\\\",\\n      \\\"to_date\\\": \\\"2026-09-02 18:00:00\\\",\\n      \\\"from_place\\\": \\\"Mumbai\\\",\\n      \\\"to_place\\\": \\\"Pune\\\"\\n    },\\n    \\\"important_notes\\\": \\\"Notes...\\\",\\n    \\\"next_followup_date\\\": \\\"2026-08-25 12:00:00\\\",\\n    \\\"followup_note\\\": \\\"Send pricing\\\"\\n  }\\n}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1300,
+        300
+      ],
+      "id": "gemini-extract-id",
+      "name": "Gemini: Extract Lead Info",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "check-success-cond",
+              "leftValue": "={{ (() => { try { const n = $node[\"Gemini: Extract Lead Info\"].json; return !n.error && Array.isArray(n.candidates) && n.candidates.length > 0; } catch(e) { return false; } })() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1500,
+        300
+      ],
+      "id": "decide-success-id",
+      "name": "Decide Succeeded/Failed"
+    },
+    {
+      "parameters": {
+        "jsCode": "const extractNode = $node[\"Gemini: Extract Lead Info\"];\n\nif (extractNode && extractNode.json.candidates && extractNode.json.candidates[0]) {\n  try {\n    const part = extractNode.json.candidates[0].content.parts[0];\n    let parsed;\n    if (typeof part.text === 'object' && part.text !== null) {\n      // Already a parsed object\n      parsed = part.text;\n    } else if (typeof part.text === 'string') {\n      // Extract JSON by finding first { and last } — handles any trailing garbage\n      const firstBrace = part.text.indexOf('{');\n      const lastBrace = part.text.lastIndexOf('}');\n      if (firstBrace === -1 || lastBrace === -1) {\n        throw new Error('No JSON object found in Gemini response: ' + part.text.substring(0, 200));\n      }\n      const cleaned = part.text.substring(firstBrace, lastBrace + 1);\n      parsed = JSON.parse(cleaned);\n    } else {\n      throw new Error('Unexpected response format from Gemini');\n    }\n    return [{\n      json: {\n        status: 'processed',\n        transcript: parsed.transcript || 'No transcript provided',\n        summary: parsed.summary || 'No summary provided',\n        intent: parsed.intent || 'Unknown intent',\n        conversion_score: Number(parsed.conversion_score) || 0,\n        lead_info: parsed.lead_info || {}\n      }\n    }];\n  } catch (e) {\n    return [{\n      json: {\n        error: 'Failed to parse Gemini JSON response: ' + e.message\n      }\n    }];\n  }\n}\n\nreturn [{\n  json: {\n    error: 'No response text found from Gemini'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        180
+      ],
+      "id": "parse-ai-response-id",
+      "name": "Parse AI Response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "check-parse-cond",
+              "leftValue": "={{ !$json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1900,
+        180
+      ],
+      "id": "is-parse-valid-id",
+      "name": "Is Parse Valid?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:8000/api/call-recordings/{{$node[\"Split Recordings List\"].json.id}}/process",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"crm-api-token\": \"local-test-token\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{JSON.stringify({status: $json.status, transcript: $json.transcript, summary: $json.summary, intent: $json.intent, conversion_score: $json.conversion_score, lead_info: $json.lead_info})}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2100,
+        100
+      ],
+      "id": "crm-submit-success-id",
+      "name": "CRM: Submit Lead Information"
+    },
+    {
+      "parameters": {
+        "jsCode": "let errorMsg = \"Unknown error occurred\";\n\ntry {\n  const downloadNode = $node[\"Download Audio File\"];\n  if (downloadNode && downloadNode.json && downloadNode.json.error) {\n    errorMsg = \"Download failed: \" + (downloadNode.json.error.message || JSON.stringify(downloadNode.json.error));\n  }\n} catch (e) {}\n\ntry {\n  const base64Node = $node[\"Extract Base64\"];\n  if (base64Node && base64Node.json && base64Node.json.error) {\n    errorMsg = \"Base64 extraction failed: \" + (base64Node.json.error.message || JSON.stringify(base64Node.json.error));\n  }\n} catch (e) {}\n\ntry {\n  const extractNode = $node[\"Gemini: Extract Lead Info\"];\n  if (extractNode && extractNode.json && extractNode.json.error) {\n    errorMsg = \"Gemini Extraction failed: \" + (extractNode.json.error.message || JSON.stringify(extractNode.json.error));\n  }\n} catch (e) {}\n\ntry {\n  const parseNode = $node[\"Parse AI Response\"];\n  if (parseNode && parseNode.json && parseNode.json.error) {\n    errorMsg = \"AI Parse failed: \" + parseNode.json.error;\n  }\n} catch (e) {}\n\nreturn [{\n  json: {\n    status: \"failed\",\n    error_message: errorMsg\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        400
+      ],
+      "id": "handle-errors-id",
+      "name": "Handle Errors"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:8000/api/call-recordings/{{$node[\"Split Recordings List\"].json.id}}/process",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"crm-api-token\": \"local-test-token\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2100,
+        400
+      ],
+      "id": "crm-submit-failed-id",
+      "name": "CRM: Mark Recording Failed"
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "CRM: Get Pending Recordings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Interval": {
+      "main": [
+        [
+          {
+            "node": "CRM: Get Pending Recordings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM: Get Pending Recordings": {
+      "main": [
+        [
+          {
+            "node": "Check Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Pending": {
+      "main": [
+        [
+          {
+            "node": "Split Recordings List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Recordings List": {
+      "main": [
+        [
+          {
+            "node": "Download Audio File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio File": {
+      "main": [
+        [
+          {
+            "node": "Extract Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Base64": {
+      "main": [
+        [
+          {
+            "node": "Gemini: Extract Lead Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini: Extract Lead Info": {
+      "main": [
+        [
+          {
+            "node": "Decide Succeeded/Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Succeeded/Failed": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Is Parse Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Parse Valid?": {
+      "main": [
+        [
+          {
+            "node": "CRM: Submit Lead Information",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Errors": {
+      "main": [
+        [
+          {
+            "node": "CRM: Mark Recording Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "name": "crm",
+      "createdAt": "2026-07-14T00:00:00.000Z",
+      "updatedAt": "2026-07-14T00:00:00.000Z"
+    },
+    {
+      "name": "ai",
+      "createdAt": "2026-07-14T00:00:00.000Z",
+      "updatedAt": "2026-07-14T00:00:00.000Z"
+    }
+  ],
+  "id": "kY3fM8hP1qRzW9aC"
+}
